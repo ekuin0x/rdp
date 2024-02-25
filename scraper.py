@@ -46,7 +46,7 @@ def getLinks():
     
 def linkedin(link):
     options = webdriver.ChromeOptions()
-    #options.add_argument("--headless")
+    options.add_argument("--headless")
     
     chrome = webdriver.Chrome(options=options)
     chrome.get(link)
@@ -65,14 +65,18 @@ def linkedin(link):
 
     if "GB" in address :
         if emails != None :
-            print("--------------------")
-            print(emails[0])
-            print("--------------------")
-            print(address)
+            record = {
+                "name" : name,
+                "niche" : niche,
+                "address" : address,
+                "email" : emails[0],
+            }
+            data.append(record)
 
 
 while True : 
     links = [] 
+    data = []
     for i in range(100) : 
         t = threading.Thread(target=getLinks)
         t.start()
@@ -80,10 +84,20 @@ while True :
     sleep(5)
     
     if(len(links) > 0):
-        for i in range(2) : 
+        for i in range(1) : 
             link = random.choice(links)
             t = threading.Thread(target=linkedin,args=(link,))
             t.start()
         sleep(15)
+        
+    with open("data.json", 'r') as f :
+        local = json.loads(f.read())
+        for record in data : 
+            if record not in local :
+                local.append(record)
+        with open("data.json", 'w') as w :
+            json.dump(local, w)
+        
+        
     
 
